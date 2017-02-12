@@ -1,0 +1,56 @@
+body{
+	width: 100%;
+}
+
+#flex-container{
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+}
+
+#calc-body{
+	display: flex;
+	flex-flow: column nowrap;
+	align-items: center;
+	width: 300px;
+	height: 400px;
+	background-color: red;
+}
+
+#display{
+	width: 80%;
+	height: 15%;
+	background-color: gray; 
+}
+
+#btn-cont{
+	width: 90%;
+	height: 80%;
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: space-around;
+	align-items: center;
+	background-color: blue;
+}
+
+.btn-col{
+	width: 20%;
+	height: 90%;
+	display: flex;
+	flex-flow: column nowrap;
+	justify-content: space-around;
+	align-items: center;
+	background-color: white;
+}
+
+.btn{
+	width: 90%;
+	height: 15%;
+	flex: 0 1 auto;
+	background-color: black;
+}
+
+.btn-col:nth-child(4) > div:nth-child(4){
+	height: 35%;
+	background-color: gray;
+}
