@@ -2,6 +2,11 @@ window.onload = function(){
 
 	var globalState = {};
 	var opChain = [];
+	var tempEntry = "";
+
+	var entryDisplay = document.getElementById("display").children[0];
+	var opDisplay = document.getElementById("display").children[1];
+
 	var numbers = document.getElementsByClassName("num");
 	for(var i=0; i < numbers.length; i++)
 		numbers[i].addEventListener("click", numPressed);
@@ -14,38 +19,79 @@ window.onload = function(){
 	for(var k=0; k < clearers.length; k++)
 		clearers[k].addEventListener("click", clearerPressed);
 
-	var display = document.getElementById("display");
-
 	function numPressed()
 	{
-		display.innerHTML = display.innerHTML.toString() + this.dataset.key.toString();
+		evaluateAndStoreEntry(false);
+
+		if(isNumber(opChain[opChain.length-1]))
+			return;
+		else
+			console.log(opChain[opChain.length-1]);
+
+		tempEntry += this.dataset.key;
+		printToDisplays();
 	}
 
 	function operatorPressed()
-	{
-		display.innerHTML = this.dataset.key;
+	{		
+		if(evaluateAndStoreEntry(true))
+		{
+			tempEntry = this.dataset.key;
+			printToDisplays();
+		}
 	}
 
 	function clearerPressed()
 	{
-		globalState.storedVal = null;
-		display.innerHTML = "";
+		if(this.dataset.key === "ac" || opChain.length < 2)
+		{
+			opChain = [];
+			clearDisplay(opDisplay);						
+		}
+		
+		tempEntry = "";
+		clearDisplay(entryDisplay);
+		opDisplay.innerHTML = getOpChain();
 	}
 
-	function calculate()
+	function evaluateAndStoreEntry(mustbeNum)
 	{
-		var result;
+		if(mustbeNum === isNumber(tempEntry))		
+		{
+			if(tempEntry !== "")
+				opChain.push(tempEntry);
 
-		if(globalState.opInitiated === "+")
-			result = display.innerHTML + globalState.storedVal;
-		else if(globalState.opInitiated === "-")
-			result = display.innerHTML - globalState.storedVal;
-		else if(globalState.opInitiated === "x")
-			result = display.innerHTML * globalState.storedVal;
-		else if(globalState.opInitiated === "/")
-			result = display.innerHTML / globalState.storedVal;
+			tempEntry = "";
+			return true;
+		}
+		else
+			return false;
+	}
 
-		display.innerHTML = result;
+	function isNumber(value)
+	{
+		return (value !== "" && value !== null && !isNaN(value));
+	}
+
+	function getOpChain()
+	{
+		var data = "";
+
+		for(var i=0; i < opChain.length; i++)
+			data += opChain[i];
+
+		return data;
+	}
+
+	function printToDisplays()
+	{
+		entryDisplay.innerHTML = tempEntry;
+		opDisplay.innerHTML = getOpChain() + tempEntry;
+	}
+
+	function clearDisplay(display)
+	{
+		display.innerHTML = "";
 	}
 
 };

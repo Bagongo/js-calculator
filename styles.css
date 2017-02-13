@@ -21,11 +21,28 @@ body{
 	width: 80%;
 	height: 15%;
 	display: flex;
+	flex-flow: column nowrap;
+	align-items: center;
+	padding: 5px 15px 5px 0;
+	background-color: gray; 
+}
+
+#display > div{
+	width: 100%;
+	display: flex;
 	justify-content: flex-end;
 	align-items: center;
-	padding: 0 15px 0 0;
 	color: black;
-	background-color: gray; 
+}
+
+#display > div:nth-child(1){
+	height: 50%;
+	background-color: blue;
+}
+
+#display > div:nth-child(2){
+	height: 40%;
+	background-color: green;
 }
 
 #btn-cont{
@@ -63,3 +80,4 @@ body{
 	height: 35%;
 	background-color: gray;
 }
+
