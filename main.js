@@ -19,22 +19,24 @@ window.onload = function(){
 	for(var k=0; k < clearers.length; k++)
 		clearers[k].addEventListener("click", clearerPressed);
 
+	var equal = document.getElementById("eq");
+
 	function numPressed()
 	{
 		evaluateAndStoreEntry(false);
 
-		if(isNumber(opChain[opChain.length-1]))
-			return;
-		else
-			console.log(opChain[opChain.length-1]);
-
-		tempEntry += this.dataset.key;
-		printToDisplays();
+		if(!isNumber(opChain[opChain.length-1]))
+		{
+			tempEntry += this.dataset.key;
+			printToDisplays();
+		}
 	}
 
 	function operatorPressed()
 	{		
-		if(evaluateAndStoreEntry(true))
+		evaluateAndStoreEntry(true);
+
+		if(isNumber(opChain[opChain.length-1]))
 		{
 			tempEntry = this.dataset.key;
 			printToDisplays();
@@ -43,7 +45,7 @@ window.onload = function(){
 
 	function clearerPressed()
 	{
-		if(this.dataset.key === "ac" || opChain.length < 2)
+		if(this.dataset.key === "ac" || opChain.length < 1)
 		{
 			opChain = [];
 			clearDisplay(opDisplay);						
@@ -62,10 +64,7 @@ window.onload = function(){
 				opChain.push(tempEntry);
 
 			tempEntry = "";
-			return true;
 		}
-		else
-			return false;
 	}
 
 	function isNumber(value)
