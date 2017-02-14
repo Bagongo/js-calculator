@@ -19,7 +19,7 @@ window.onload = function(){
 	for(var k=0; k < clearers.length; k++)
 		clearers[k].addEventListener("click", clearerPressed);
 
-	var equal = document.getElementById("eq");
+	document.getElementById("equal").addEventListener("click", makeCalculation);
 
 	function numPressed()
 	{
@@ -53,7 +53,7 @@ window.onload = function(){
 		
 		tempEntry = "";
 		clearDisplay(entryDisplay);
-		opDisplay.innerHTML = getOpChain();
+		opDisplay.innerHTML = opChain.join("");
 	}
 
 	function evaluateAndStoreEntry(mustbeNum)
@@ -72,25 +72,66 @@ window.onload = function(){
 		return (value !== "" && value !== null && !isNaN(value));
 	}
 
-	function getOpChain()
-	{
-		var data = "";
-
-		for(var i=0; i < opChain.length; i++)
-			data += opChain[i];
-
-		return data;
-	}
-
 	function printToDisplays()
 	{
 		entryDisplay.innerHTML = tempEntry;
-		opDisplay.innerHTML = getOpChain() + tempEntry;
+		opDisplay.innerHTML = opChain.join("") + tempEntry;
 	}
 
 	function clearDisplay(display)
 	{
 		display.innerHTML = "";
+	}
+
+	function makeCalculation()
+	{
+		evaluateAndStoreEntry(true);
+
+		if(opChain.length > 2)
+		{
+			var result = parseFloat(opChain[0]);
+
+			for(var i=1; i < opChain.length; i+=2)
+			{
+				if(opChain.length - 1 < i+1)
+					break;
+
+				var secondTerm = parseFloat(opChain[i+1]);
+
+				switch(opChain[i]) 
+				{
+					case "+" :
+						result += secondTerm;	
+						break;
+					case "-" :
+						result -= secondTerm;	
+						break;
+					case "x" :
+						result *= secondTerm;
+						break;
+					case "/" :
+						result /= secondTerm;
+						break;
+					default :
+					console.log("error while calculating.");
+				}
+			}
+
+			displayResult(result);
+		}
+	}
+
+	function displayResult(result)
+	{
+		if(!isNumber(opChain[opChain.length - 1]))
+			opChain[opChain.length - 1] = "=";
+		else
+			opChain.push("=");
+
+		tempEntry = result;
+		printToDisplays();
+		opChain = [];
+		tempEntry = "";
 	}
 
 };

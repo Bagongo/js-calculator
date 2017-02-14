@@ -37,12 +37,12 @@ body{
 
 #display > div:nth-child(1){
 	height: 50%;
-	background-color: blue;
+	background-color: azure;
 }
 
 #display > div:nth-child(2){
 	height: 40%;
-	background-color: green;
+	background-color: palegreen;
 }
 
 #btn-cont{
