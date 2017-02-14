@@ -29,6 +29,7 @@ window.onload = function(){
 		{
 			tempEntry += this.dataset.key;
 			printToDisplays();
+			digitCheck();
 		}
 	}
 
@@ -83,6 +84,19 @@ window.onload = function(){
 		display.innerHTML = "";
 	}
 
+	function digitCheck()
+	{
+		var maxDigits = 40;
+
+		if(opDisplay.innerHTML.toString().length > maxDigits)
+		{
+			opDisplay.innerHTML = "digit limtation exceeded";
+			entryDisplay.innerHTML = "";
+			tempEntry = "";
+		}
+
+	}
+
 	function makeCalculation()
 	{
 		evaluateAndStoreEntry(true);
@@ -130,6 +144,7 @@ window.onload = function(){
 
 		tempEntry = result;
 		printToDisplays();
+		digitCheck();
 		opChain = [];
 		tempEntry = "";
 	}
