@@ -69,11 +69,13 @@ window.onload = function(){
 		{
 			opChain = [];
 			clearDisplays();
+			animateCalculator("hard-shake");
 		}
 		else
 		{
 			entryDisplay.innerHTML = "";
 			opDisplay.innerHTML = opChain.join("");
+			animateCalculator("soft-shake");
 		}
 	}
 
@@ -210,9 +212,9 @@ window.onload = function(){
 	{
 		var particle = document.createElement("div");
 		particle.innerHTML = value;
-		particle.addEventListener("webkitAnimationEnd", removeParticle, false);
-		particle.addEventListener("animationend", removeParticle, false);
-		particle.addEventListener("oanimationend", removeParticle, false);
+		particle.addEventListener("webkitAnimationEnd", removeParticle);
+		particle.addEventListener("animationend", removeParticle);
+		particle.addEventListener("oanimationend", removeParticle);
 		document.getElementById("ext-field").appendChild(particle);
 		particle.style.color = properties.color;
 		particle.style.left = properties.left;
@@ -223,6 +225,24 @@ window.onload = function(){
 	function removeParticle()
 	{
 		this.parentNode.removeChild(this);
+	}
+
+	function animateCalculator(animationClass)
+	{
+		var calculator = document.getElementById("calc-body");
+		calculator.addEventListener("webkitAnimationEnd", removeCalculatorAnimation);
+		calculator.addEventListener("animationend", removeCalculatorAnimation);
+		calculator.addEventListener("oanimationend", removeCalculatorAnimation);
+		calculator.classList.add(animationClass);
+	}
+
+	function removeCalculatorAnimation()
+	{
+		if(this.classList.contains("soft-shake"))
+			this.classList.remove("soft-shake");
+
+		if(this.classList.contains("hard-shake"))
+			this.classList.remove("hard-shake");
 	}
 
 };

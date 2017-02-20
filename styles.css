@@ -27,6 +27,22 @@ body{
 	background-color: red;
 }
 
+.soft-shake{
+	animation: shake .3s linear alternate;
+}
+
+.hard-shake{
+	animation: shake .2s linear 3 alternate;
+}
+
+@keyframes shake{
+	0%{left: 0;}
+	25%{left: 10px;}
+	50%{left: 0;}
+	75%{left: -10px;}
+	100%{left: 0;}
+}
+
 #display{
 	width: 80%;
 	height: 15%;
@@ -105,22 +121,10 @@ body{
 	animation: moveoutput 1.5s ease-in-out;
 }
 
-/* Safari 4.0 - 8.0 */
-@-webkit-keyframes moveinput {
-    0% {left: 0%;}
-    100% {left: 50%;}
-} 
-/* Standard syntax */ 
 @keyframes moveinput {
     0% {left: 0%; opacity: 0;}
     75%{opacity: 1;}
     100% {left: 50%;}
-}
-
-@-webkit-keyframes moveoutput{
-	0% {left: 50%; opacity: 0;}
-	75% {opacity: 1;}
-	100% {left: 100%;}
 }
 
 @keyframes moveoutput{
