@@ -63,15 +63,18 @@ window.onload = function(){
 
 	function clearerPressed()
 	{
-		tempEntry = entryDisplay.innerHTML = "";
+		tempEntry = "";
 
 		if(this.dataset.key === "ac" || opChain.length < 1)
 		{
 			opChain = [];
-			clearDisplay(opDisplay);
+			clearDisplays();
 		}
 		else
+		{
+			entryDisplay.innerHTML = "";
 			opDisplay.innerHTML = opChain.join("");
+		}
 	}
 
 	function evaluateEntry(mustbeNum)
@@ -106,17 +109,17 @@ window.onload = function(){
 		opDisplay.innerHTML = opChain.join("") + tempEntry;
 	}
 
-	function clearDisplay(display)
+	function clearDisplays()
 	{
-		display.innerHTML = "0";
+		entryDisplay.innerHTML = opDisplay.innerHTML = "0";
 	}
 
 	function digitCheck()
 	{
 		if(opDisplay.innerHTML.toString().length > maxDigits)
 		{
+			clearDisplays();
 			opDisplay.innerHTML = "digit limit exceeded";
-			clearDisplay(entryDisplay);
 			opChain = [];
 			tempEntry = "";
 		}
