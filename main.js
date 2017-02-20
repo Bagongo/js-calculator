@@ -1,8 +1,8 @@
 window.onload = function(){
 
-	var globalState = {};
 	var opChain = [];
 	var tempEntry = "";
+	var maxDigits = 35;
 
 	var entryDisplay = document.getElementById("display").children[0];
 	var opDisplay = document.getElementById("display").children[1];
@@ -19,11 +19,12 @@ window.onload = function(){
 	for(var k=0; k < clearers.length; k++)
 		clearers[k].addEventListener("click", clearerPressed);
 
+	document.getElementById("point").addEventListener("click", pointPressed);
 	document.getElementById("equal").addEventListener("click", makeCalculation);
 
 	function numPressed()
 	{
-		evaluateAndStoreEntry(false);
+		evaluateEntry(false);
 
 		if(!isNumber(opChain[opChain.length-1]))
 		{
@@ -35,7 +36,7 @@ window.onload = function(){
 
 	function operatorPressed()
 	{		
-		evaluateAndStoreEntry(true);
+		evaluateEntry(true);
 
 		if(isNumber(opChain[opChain.length-1]))
 		{
@@ -44,26 +45,52 @@ window.onload = function(){
 		}
 	}
 
+	function pointPressed()
+	{
+		if(tempEntry.indexOf(".") < 0)
+		{			
+			if(isNumber(tempEntry))
+				tempEntry += ".";
+			else
+			{
+				evaluateEntry(false);
+				tempEntry = "0.";
+			}
+
+			printToDisplays();	
+		}
+	}
+
 	function clearerPressed()
 	{
+		tempEntry = entryDisplay.innerHTML = "";
+
 		if(this.dataset.key === "ac" || opChain.length < 1)
 		{
 			opChain = [];
-			clearDisplay(opDisplay);						
+			clearDisplay(opDisplay);
 		}
-		
-		tempEntry = "";
-		clearDisplay(entryDisplay);
-		opDisplay.innerHTML = opChain.join("");
+		else
+			opDisplay.innerHTML = opChain.join("");
 	}
 
-	function evaluateAndStoreEntry(mustbeNum)
+	function evaluateEntry(mustbeNum)
 	{
 		if(mustbeNum === isNumber(tempEntry))		
-		{
-			if(tempEntry !== "")
-				opChain.push(tempEntry);
+			formatAndStoreEntry();
+	}
 
+	function formatAndStoreEntry()
+	{
+		if(tempEntry[tempEntry.length - 1] === ".")
+			tempEntry = tempEntry.slice(0, -1);
+
+		if(isNumber(tempEntry))
+			tempEntry = parseFloat(tempEntry);
+
+		if(tempEntry !== "")
+		{
+			opChain.push(tempEntry);
 			tempEntry = "";
 		}
 	}
@@ -81,57 +108,49 @@ window.onload = function(){
 
 	function clearDisplay(display)
 	{
-		display.innerHTML = "";
+		display.innerHTML = "0";
 	}
 
 	function digitCheck()
 	{
-		var maxDigits = 40;
-
 		if(opDisplay.innerHTML.toString().length > maxDigits)
 		{
-			opDisplay.innerHTML = "digit limtation exceeded";
-			entryDisplay.innerHTML = "";
+			opDisplay.innerHTML = "digit limit exceeded";
+			clearDisplay(entryDisplay);
+			opChain = [];
 			tempEntry = "";
 		}
-
 	}
 
 	function makeCalculation()
 	{
-		evaluateAndStoreEntry(true);
+		evaluateEntry(true);
 
 		if(opChain.length > 2)
 		{
-			var result = parseFloat(opChain[0]);
+			var result = opChain[0];
 
 			for(var i=1; i < opChain.length; i+=2)
-			{
-				if(opChain.length - 1 < i+1)
-					break;
-
-				var secondTerm = parseFloat(opChain[i+1]);
-
-				switch(opChain[i]) 
-				{
-					case "+" :
-						result += secondTerm;	
-						break;
-					case "-" :
-						result -= secondTerm;	
-						break;
-					case "x" :
-						result *= secondTerm;
-						break;
-					case "/" :
-						result /= secondTerm;
-						break;
-					default :
-					console.log("error while calculating.");
-				}
-			}
+				result = makeBinaryOperation(result, opChain[i+1], opChain[i]);
 
 			displayResult(result);
+		}
+	}
+
+	function makeBinaryOperation(firstNum, secondNum, operator)
+	{
+		switch(operator) 
+		{
+			case "+" :
+				return firstNum += secondNum;	
+			case "-" :
+				return firstNum -= secondNum;	
+			case "x" :
+				return firstNum *= secondNum;	
+			case "/" :
+				return firstNum /= secondNum;	
+			default :
+				console.log("unknown operator");
 		}
 	}
 
@@ -146,7 +165,7 @@ window.onload = function(){
 		printToDisplays();
 		digitCheck();
 		opChain = [];
-		tempEntry = "";
+		tempEntry = "";		
 	}
 
 };
