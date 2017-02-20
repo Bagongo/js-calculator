@@ -91,9 +91,12 @@ window.onload = function(){
 		if(isNumber(tempEntry))
 			tempEntry = parseFloat(tempEntry);
 
+		var type = isNumber(tempEntry) ? "number" : "operator";
+
 		if(tempEntry !== "")
 		{
 			opChain.push(tempEntry);
+			setParticleProperties(type, tempEntry);
 			tempEntry = "";
 		}
 	}
@@ -123,6 +126,8 @@ window.onload = function(){
 			opChain = [];
 			tempEntry = "";
 		}
+		else
+			return true;
 	}
 
 	function makeCalculation()
@@ -136,7 +141,7 @@ window.onload = function(){
 			for(var i=1; i < opChain.length; i+=2)
 				result = makeBinaryOperation(result, opChain[i+1], opChain[i]);
 
-			displayResult(result);
+			formatAndDisplayResult(result);
 		}
 	}
 
@@ -157,7 +162,7 @@ window.onload = function(){
 		}
 	}
 
-	function displayResult(result)
+	function formatAndDisplayResult(result)
 	{
 		if(!isNumber(opChain[opChain.length - 1]))
 			opChain[opChain.length - 1] = "=";
@@ -166,9 +171,58 @@ window.onload = function(){
 
 		tempEntry = result;
 		printToDisplays();
-		digitCheck();
-		opChain = [];
-		tempEntry = "";		
+
+		if(digitCheck())
+		{
+			setParticleProperties("result", result);
+			opChain = [];
+			tempEntry = "";
+		}				
+	}
+
+
+////////////////////////////////// ANIMATION SYSTEM ///////////////////////////////////////////
+
+	
+	function setParticleProperties(type, value)
+	{
+		var properties = {};
+
+		switch(type) 
+		{
+			case "number":
+				properties = {color:"green", left:"0%", animation:"animate-input"};
+				break;
+			case "operator":
+				properties = {color:"purple", left:"0%", animation:"animate-input"};
+				break;
+			case "result":
+				properties = {color:"blue", top:"10%", left:"50%", animation:"animate-output"};
+				break;
+			default:
+				return;
+		}
+
+		createParticle(properties, value);
+	}
+
+	function createParticle(properties, value)
+	{
+		var particle = document.createElement("div");
+		particle.innerHTML = value;
+		particle.addEventListener("webkitAnimationEnd", removeParticle, false);
+		particle.addEventListener("animationend", removeParticle, false);
+		particle.addEventListener("oanimationend", removeParticle, false);
+		document.getElementById("ext-field").appendChild(particle);
+		particle.style.color = properties.color;
+		particle.style.left = properties.left;
+		particle.style.top = properties.top || Math.random() * 100 + "%";
+		particle.classList.add("particle", properties.animation);
+	}
+
+	function removeParticle()
+	{
+		this.parentNode.removeChild(this);
 	}
 
 };
