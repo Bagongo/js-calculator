@@ -31,6 +31,7 @@ window.onload = function(){
 			tempEntry += this.dataset.key;
 			printToDisplays();
 			digitCheck();
+			setParticleProperties("number", this.dataset.key);
 		}
 	}
 
@@ -42,6 +43,7 @@ window.onload = function(){
 		{
 			tempEntry = this.dataset.key;
 			printToDisplays();
+			setParticleProperties("operator", this.dataset.key);
 		}
 	}
 
@@ -63,20 +65,20 @@ window.onload = function(){
 
 	function clearerPressed()
 	{
-		tempEntry = "";
-
 		if(this.dataset.key === "ac" || opChain.length < 1)
 		{
+			animateCalculator("hard-shake");
 			opChain = [];
 			clearDisplays();
-			animateCalculator("hard-shake");
 		}
 		else
 		{
+			animateCalculator("soft-shake");
 			entryDisplay.innerHTML = "";
 			opDisplay.innerHTML = opChain.join("");
-			animateCalculator("soft-shake");
 		}
+
+		tempEntry = "";
 	}
 
 	function evaluateEntry(mustbeNum)
@@ -93,12 +95,9 @@ window.onload = function(){
 		if(isNumber(tempEntry))
 			tempEntry = parseFloat(tempEntry);
 
-		var type = isNumber(tempEntry) ? "number" : "operator";
-
 		if(tempEntry !== "")
 		{
 			opChain.push(tempEntry);
-			setParticleProperties(type, tempEntry);
 			tempEntry = "";
 		}
 	}
@@ -193,33 +192,40 @@ window.onload = function(){
 		switch(type) 
 		{
 			case "number":
-				properties = {color:"green", left:"0%", animation:"animate-input"};
+				properties = {html: value, color:"green", left:"0%", animation:"animate-input"};
 				break;
 			case "operator":
-				properties = {color:"purple", left:"0%", animation:"animate-input"};
+				properties = {html: value, color:"purple", left:"0%", animation:"animate-input"};
 				break;
 			case "result":
-				properties = {color:"blue", top:"10%", left:"50%", animation:"animate-output"};
+				properties = {html: value, color:"blue", top:"8%", left:"50%", animation:"animate-output"};
+				break;
+			case "eject":
+				var anim = Math.random() > 0.5 ? "eject-input-l" : "eject-input-r";
+				var dur = Math.random() * (800 - 500) + 500 + "ms";
+				properties = {html: value, color:"gray", left:"50%", animation: anim, duration: dur};
 				break;
 			default:
 				return;
 		}
 
-		createParticle(properties, value);
+		createParticle(properties);
 	}
 
-	function createParticle(properties, value)
+	function createParticle(properties)
 	{
 		var particle = document.createElement("div");
-		particle.innerHTML = value;
+		particle.innerHTML = properties.html;
 		particle.addEventListener("webkitAnimationEnd", removeParticle);
 		particle.addEventListener("animationend", removeParticle);
 		particle.addEventListener("oanimationend", removeParticle);
 		document.getElementById("ext-field").appendChild(particle);
 		particle.style.color = properties.color;
 		particle.style.left = properties.left;
-		particle.style.top = properties.top || Math.random() * 100 + "%";
+		particle.style.top = properties.top || Math.random() * (95 - 5) + 5 + "%";
 		particle.classList.add("particle", properties.animation);
+		particle.style.animationDuration = properties.duration || particle.style.animationDuration ;
+		particle.style.webkitTransitionDuration = properties.duration || particle.style.webkitTransitionDuration;
 	}
 
 	function removeParticle()
@@ -227,13 +233,17 @@ window.onload = function(){
 		this.parentNode.removeChild(this);
 	}
 
-	function animateCalculator(animationClass)
+	function animateCalculator(type)
 	{
 		var calculator = document.getElementById("calc-body");
 		calculator.addEventListener("webkitAnimationEnd", removeCalculatorAnimation);
 		calculator.addEventListener("animationend", removeCalculatorAnimation);
 		calculator.addEventListener("oanimationend", removeCalculatorAnimation);
-		calculator.classList.add(animationClass);
+		calculator.classList.add(type);
+
+		var toEject = type === "soft-shake" ? tempEntry : opChain.join("") + tempEntry;
+		for(var i=0; i < toEject.length; i++)
+			setParticleProperties("eject", toEject[i]);
 	}
 
 	function removeCalculatorAnimation()
