@@ -7,7 +7,7 @@ window.onload = function(){
 	var entryDisplay = document.getElementById("display").children[0];
 	var opDisplay = document.getElementById("display").children[1];
 
-	var numbers = document.getElementsByClassName("num");
+	var numbers = document.getElementsByClassName("number");
 	for(var i=0; i < numbers.length; i++)
 		numbers[i].addEventListener("click", numPressed);
 
@@ -28,10 +28,10 @@ window.onload = function(){
 
 		if(!isNumber(opChain[opChain.length-1]))
 		{
-			tempEntry += this.dataset.key;
+			tempEntry += this.value;
 			printToDisplays();
 			digitCheck();
-			setParticleProperties("number", this.dataset.key);
+			setParticleProperties("number", this.value);
 		}
 	}
 
@@ -41,9 +41,9 @@ window.onload = function(){
 
 		if(isNumber(opChain[opChain.length-1]))
 		{
-			tempEntry = this.dataset.key;
+			tempEntry = this.value;
 			printToDisplays();
-			setParticleProperties("operator", this.dataset.key);
+			setParticleProperties("operator", this.value);
 		}
 	}
 
@@ -65,7 +65,7 @@ window.onload = function(){
 
 	function clearerPressed()
 	{
-		if(this.dataset.key === "ac" || opChain.length < 1)
+		if(this.value === "ac" || opChain.length < 1)
 		{
 			animateCalculator("hard-shake");
 			opChain = [];
