@@ -1,8 +1,10 @@
 window.onload = function(){
 
-	var opChain = [];
-	var tempEntry = "";
-	var maxDigits = 15;
+///////////////////////////////// GLOBAL VARIABLES AND EVENT LISTENERS /////////////////////////////
+
+	var opChain = []; //holds numbers and operands for the calculation
+	var tempEntry = ""; //current user entry -before being validated-  
+	var maxDigits = 15; //display digit limit
 
     var calculator = document.getElementById("calc-body");
 	var entryDisplay = document.getElementById("display").children[0];
@@ -27,9 +29,9 @@ window.onload = function(){
 	{
 		evaluateEntry(false);
 
-		if(!isNumber(opChain[opChain.length-1]))
+		if(!isNumber(opChain[opChain.length-1])) //is last entry NOT a number?
 		{
-			tempEntry += this.value;
+			tempEntry += this.value; //chains new digit to current entry
 			printToDisplays();
 			digitCheck();
 			setParticleProperties("number", this.value);
@@ -41,7 +43,7 @@ window.onload = function(){
 	{		
 		evaluateEntry(true);
 
-		if(isNumber(opChain[opChain.length-1]))
+		if(isNumber(opChain[opChain.length-1])) //is last entry NOT an operator?
 		{
 			tempEntry = this.value;
 			printToDisplays();
@@ -52,7 +54,7 @@ window.onload = function(){
 
 	function pointPressed()
 	{
-		if(tempEntry.indexOf(".") < 0)
+		if(tempEntry.indexOf(".") < 0) //is current entry already a decimal? 
 		{			
 			if(isNumber(tempEntry))
 				tempEntry += ".";
@@ -66,6 +68,7 @@ window.onload = function(){
 		}
 	}
 
+	//erase whole stored operations and/or current entry
 	function clearerPressed()
 	{
 		if(this.value === "ac" || opChain.length < 1)
@@ -84,12 +87,14 @@ window.onload = function(){
 		tempEntry = "";
 	}
 
+	//cheks if current entry is of proper type for storage 
 	function evaluateEntry(mustbeNum)
 	{
 		if(mustbeNum === isNumber(tempEntry))		
 			formatAndStoreEntry();
 	}
 
+	//trim uneeded chars from entry, types it to float (if number) and stores it  
 	function formatAndStoreEntry()
 	{
 		if(tempEntry[tempEntry.length - 1] === ".")
@@ -121,6 +126,7 @@ window.onload = function(){
 		entryDisplay.innerHTML = opDisplay.innerHTML = "0";
 	}
 
+	//erase stored data and prints message when digit limit gets exceeded 
 	function digitCheck()
 	{
 		if(entryDisplay.innerHTML.toString().length > maxDigits || opDisplay.innerHTML.toString().length > maxDigits * 2)
@@ -136,13 +142,13 @@ window.onload = function(){
 
 	function makeCalculation()
 	{
-		evaluateEntry(true);
+		evaluateEntry(true); //try to store last input entered
 
-		if(opChain.length > 2)
+		if(opChain.length > 2) //is there at least one binary operation to perform? 
 		{
 			var result = opChain[0];
 
-			for(var i=1; i < opChain.length; i+=2)
+			for(var i=1; i < opChain.length; i+=2) //performs all stored operations
 				result = makeBinaryOperation(result, opChain[i+1], opChain[i]);
 
 			formatAndDisplayResult(result);
@@ -187,7 +193,7 @@ window.onload = function(){
 
 ////////////////////////////////// ANIMATION SYSTEM ///////////////////////////////////////////
 
-	var ejectDirLeft = true;
+	var ejectDirLeft = true; //ejected particle direction
 	function setParticleProperties(type, value)
 	{
 		var properties = {};
@@ -196,16 +202,16 @@ window.onload = function(){
 		{
 			case "number":
 			case "operator":
-				properties = {html:value, color:"black", left:"0%", animation:"animate-input"};
+				properties = {html:value, color:"lightgrey", left:"0%", animation:"animate-input"}; //add 'glow' class to make input glow as calculator
 				break;
 			case "result":
 				properties = {html:value, size:"1.5em", color:"rgb(125, 0, 0)", top:"7%", left:"50%", animation:"animate-output"};
 				break;
-			case "eject":
-				var anim = ejectDirLeft ? "eject-input-l" : "eject-input-r";
+			case "ejected":
+				var anim = ejectDirLeft ? "eject-input-l" : "eject-input-r"; //alternates ejected particle direction
 				ejectDirLeft = !ejectDirLeft;
-				var dur = Math.random() * (800 - 500) + 500 + "ms";
-				properties = {html:value, color:"darkgray", left:"50%", animation:anim, duration:dur};
+				var dur = Math.random() * (800 - 500) + 500 + "ms"; //randomize animation duration
+				properties = {html:value, color:"black", left:"50%", animation:anim, duration:dur};
 				break;
 			default:
 				return;
@@ -225,8 +231,8 @@ window.onload = function(){
 		particle.style.color = properties.color;
 		particle.style.left = properties.left;
 		particle.style.top = properties.top || Math.random() * (90 - 10) + 10 + "%";
-		particle.style.fontSize = properties.size || Math.random() * (2 - 1) + 1 + "em";
-		particle.classList.add("particle", properties.animation);
+		particle.style.fontSize = properties.size || Math.random() * (1.5 - 1) + 1 + "em";
+		particle.className = "particle " + properties.animation;
 		particle.style.animationDuration = properties.duration || particle.style.animationDuration ;
 		particle.style.webkitTransitionDuration = properties.duration || particle.style.webkitTransitionDuration;
 	}
@@ -244,8 +250,8 @@ window.onload = function(){
 		calculator.classList.add(animType);
 
 		var toEject = animType === "soft-shake" ? tempEntry : opChain.join("") + tempEntry;
-		for(var i=0; i < toEject.length; i++)
-			setParticleProperties("eject", toEject[i]);
+		for(var i=0; i < toEject.length; i++) //creates particle for every stored char 
+			setParticleProperties("ejected", toEject[i]);
 	}
 
 	function calculatorGlow(){
