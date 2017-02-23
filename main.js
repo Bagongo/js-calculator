@@ -2,8 +2,9 @@ window.onload = function(){
 
 	var opChain = [];
 	var tempEntry = "";
-	var maxDigits = 35;
+	var maxDigits = 15;
 
+    var calculator = document.getElementById("calc-body");
 	var entryDisplay = document.getElementById("display").children[0];
 	var opDisplay = document.getElementById("display").children[1];
 
@@ -32,6 +33,7 @@ window.onload = function(){
 			printToDisplays();
 			digitCheck();
 			setParticleProperties("number", this.value);
+			calculatorGlow();
 		}
 	}
 
@@ -44,6 +46,7 @@ window.onload = function(){
 			tempEntry = this.value;
 			printToDisplays();
 			setParticleProperties("operator", this.value);
+			calculatorGlow();
 		}
 	}
 
@@ -67,13 +70,13 @@ window.onload = function(){
 	{
 		if(this.value === "ac" || opChain.length < 1)
 		{
-			animateCalculator("hard-shake");
+			calculatorShake("hard-shake");
 			opChain = [];
 			clearDisplays();
 		}
 		else
 		{
-			animateCalculator("soft-shake");
+			calculatorShake("soft-shake");
 			entryDisplay.innerHTML = "";
 			opDisplay.innerHTML = opChain.join("");
 		}
@@ -120,7 +123,7 @@ window.onload = function(){
 
 	function digitCheck()
 	{
-		if(opDisplay.innerHTML.toString().length > maxDigits)
+		if(entryDisplay.innerHTML.toString().length > maxDigits || opDisplay.innerHTML.toString().length > maxDigits * 2)
 		{
 			clearDisplays();
 			opDisplay.innerHTML = "digit limit exceeded";
@@ -184,7 +187,7 @@ window.onload = function(){
 
 ////////////////////////////////// ANIMATION SYSTEM ///////////////////////////////////////////
 
-	
+	var ejectDirLeft = true;
 	function setParticleProperties(type, value)
 	{
 		var properties = {};
@@ -192,18 +195,17 @@ window.onload = function(){
 		switch(type) 
 		{
 			case "number":
-				properties = {html: value, color:"green", left:"0%", animation:"animate-input"};
-				break;
 			case "operator":
-				properties = {html: value, color:"purple", left:"0%", animation:"animate-input"};
+				properties = {html:value, color:"black", left:"0%", animation:"animate-input"};
 				break;
 			case "result":
-				properties = {html: value, color:"blue", top:"8%", left:"50%", animation:"animate-output"};
+				properties = {html:value, size:"1.5em", color:"rgb(125, 0, 0)", top:"7%", left:"50%", animation:"animate-output"};
 				break;
 			case "eject":
-				var anim = Math.random() > 0.5 ? "eject-input-l" : "eject-input-r";
+				var anim = ejectDirLeft ? "eject-input-l" : "eject-input-r";
+				ejectDirLeft = !ejectDirLeft;
 				var dur = Math.random() * (800 - 500) + 500 + "ms";
-				properties = {html: value, color:"gray", left:"50%", animation: anim, duration: dur};
+				properties = {html:value, color:"darkgray", left:"50%", animation:anim, duration:dur};
 				break;
 			default:
 				return;
@@ -222,7 +224,8 @@ window.onload = function(){
 		document.getElementById("ext-field").appendChild(particle);
 		particle.style.color = properties.color;
 		particle.style.left = properties.left;
-		particle.style.top = properties.top || Math.random() * (95 - 5) + 5 + "%";
+		particle.style.top = properties.top || Math.random() * (90 - 10) + 10 + "%";
+		particle.style.fontSize = properties.size || Math.random() * (2 - 1) + 1 + "em";
 		particle.classList.add("particle", properties.animation);
 		particle.style.animationDuration = properties.duration || particle.style.animationDuration ;
 		particle.style.webkitTransitionDuration = properties.duration || particle.style.webkitTransitionDuration;
@@ -233,26 +236,28 @@ window.onload = function(){
 		this.parentNode.removeChild(this);
 	}
 
-	function animateCalculator(type)
+	function calculatorShake(animType)
 	{
-		var calculator = document.getElementById("calc-body");
-		calculator.addEventListener("webkitAnimationEnd", removeCalculatorAnimation);
-		calculator.addEventListener("animationend", removeCalculatorAnimation);
-		calculator.addEventListener("oanimationend", removeCalculatorAnimation);
-		calculator.classList.add(type);
+		calculator.addEventListener("webkitAnimationEnd", function(){removeCalculatorClass(animType);});
+		calculator.addEventListener("animationend", function(){removeCalculatorClass(animType);});
+		calculator.addEventListener("oanimationend", function(){removeCalculatorClass(animType);});
+		calculator.classList.add(animType);
 
-		var toEject = type === "soft-shake" ? tempEntry : opChain.join("") + tempEntry;
+		var toEject = animType === "soft-shake" ? tempEntry : opChain.join("") + tempEntry;
 		for(var i=0; i < toEject.length; i++)
 			setParticleProperties("eject", toEject[i]);
 	}
 
-	function removeCalculatorAnimation()
-	{
-		if(this.classList.contains("soft-shake"))
-			this.classList.remove("soft-shake");
+	function calculatorGlow(){
+		calculator.classList.add("glow");
+		calculator.addEventListener("webkitTransitionEnd", function(){removeCalculatorClass("glow");});  // Code for Safari 3.1 to 6.0
+		calculator.addEventListener("transitionend", function(){removeCalculatorClass("glow");});
+	}
 
-		if(this.classList.contains("hard-shake"))
-			this.classList.remove("hard-shake");
+	function removeCalculatorClass(className)
+	{
+		if(calculator.classList.contains(className));
+			calculator.classList.remove(className);
 	}
 
 };
