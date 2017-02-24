@@ -31,7 +31,13 @@ window.onload = function(){
 
 		if(!isNumber(opChain[opChain.length-1])) //is last entry NOT a number?
 		{
-			tempEntry += this.value; //chains new digit to current entry
+			if(this.value === "0" && entryDisplay.innerHTML === "0") //prevent inserting extra zeroes
+				return;
+			if(this.value !== "." && entryDisplay.innerHTML === "0") //ignore first zero entered if new input is another number
+				tempEntry = this.value;
+			else	
+				tempEntry += this.value; //chains new digit to current entry
+			
 			printToDisplays();
 			digitCheck();
 			setParticleProperties("number", this.value);
@@ -178,6 +184,16 @@ window.onload = function(){
 			opChain[opChain.length - 1] = "=";
 		else
 			opChain.push("=");
+
+		result = result.toString();
+		if(result.indexOf(".") >= 0)
+		{
+			if(result.toString().length > 10)
+				result = result.substring(0, 8);
+
+			while (result[result.length - 1] === "0" || result[result.length - 1] === ".") 
+				result = result.slice(0, -1);
+		}
 
 		tempEntry = result;
 		printToDisplays();
